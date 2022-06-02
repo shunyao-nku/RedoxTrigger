@@ -1,5 +1,7 @@
 # Co-occurrence network, topological properties and their corresponding random networks
 
+# install.packages("igraph")
+# install.packages("psych")
 library(igraph)
 library(psych)
 library(reshape2)
@@ -18,12 +20,12 @@ OTU <- OTU[,colSums(OTU)/sum(OTU)>=(abundance/100)]
 r.cutoff=0.7
 p.cutoff=0.01
 
-# Ev-OTU spearman's correlation calculation 
-Ev=t(Ev)
+# Ef-OTU spearman's correlation calculation 
+Ev=t(Ef)
 OTU=t(OTU)
-occor=corr.test(OTU, Ev,
+occor=corr.test(OTU, Ef,
                 use="pairwise",
-                method="spearman", # 可选pearson/kendall
+                method="spearman",
                 adjust="fdr",
                 alpha=0.05)
 
