@@ -1,47 +1,26 @@
-
-data(iris)
-aa<-iris
-
-data <- vegdist(aa[,1:4], method = "bray")
-
-pcoa<- pcoa(data, correction = "none", rn = NULL)
-
-
-
-
+# PCoA based on bray-curtis distance
 library("ggplot2")
 
 library("vegan")
 
-
-phylum <- read.table("D://Zhenlai_rewrite/PCA/filtered_ASV-table_sandcore_water_PCoA.txt", sep="\t", header=T, row.names=1)
+# input the feature table of minerals and PW samples
+phylum <- read.table("D://Zhenlai/PCA/filtered_ASV-table_sandcore_water_PCoA.txt", sep="\t", header=T, row.names=1)
 phylum<-t(phylum)
 
 phylum<- decostand(phylum, method = 'hellinger')
 
 bray_dis <- vegdist(phylum, method = 'bray')
 
-#输出距离矩阵
+# output bray-curtis distance matrix among samples
 write.table(as.matrix(bray_dis), 'D://Zhenlai_rewrite/PCA/bray_distance.txt', sep = '\t', col.names = NA, quote = FALSE)
 
 pcoa <- cmdscale(bray_dis, k = (nrow(phylum) - 1), eig = TRUE)
 
-#各 PCoA 轴的特征值
+# the feature values of PCoA axises
 pcoa_eig <- pcoa$eig
-#先评估下负特征值（末尾几个轴）
-barplot(pcoa_eig)
 
-pcoa_exp <- pcoa$eig/sum(pcoa$eig)
-
-#样方排序坐标
-site <- pcoa$point
-#或
-site <- scores(pcoa)
-#输出
-write.table(site, 'pcoa_site.txt', sep = '\t', col.names = NA, quote = FALSE)
-
-
-group <- read.table("D://Zhenlai_rewrite/PCA/Group.txt", sep="\t", header=T, row.names=1)
+# input the group information
+group <- read.table("D://Zhenlai/PCA/Group.txt", sep="\t", header=T, row.names=1)
 
 pcoa_eig<-data.frame(scores(pcoa)[,1:2])
 
@@ -73,5 +52,5 @@ p <- ggplot(pcoa_eig, aes(Dim1, Dim2)) +
 
   p
   
-  ggsave('D://Zhenlai_rewrite/PCA/pcoa.pdf', p, width = 6, height = 4.7)
+  ggsave('D://Zhenlai/PCA/pcoa.pdf', p, width = 6, height = 4.7)
   
