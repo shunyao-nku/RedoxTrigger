@@ -1,20 +1,21 @@
-#top10丰度phylum或class的冲击组成图 (输入对应格式数据后，代码无需修改，就能出图)
+# top(n) abundance phylum or genus stack plot
 
-otu<-read.table("D://个人资料/博一/镇赉岩心样品/Analysis/feature-table.txt",sep="\t", header=T, row.names=1)
+library(ggalluvial)
 
-design<-read.csv("D://个人资料/博一/镇赉岩心样品/Analysis/test_design.csv")
+# input feature table
+otu<-read.table("D://Zhenlai_rewrite/meta/Result2/ASV_resampled_total.txt",sep="\t", header=T, row.names=1)
 
-tax<-read.csv("D://test100/test_tax.csv",row.names = 1)
+# input group information
+design<-read.csv("D://Zhenlai_rewrite/meta/Result2/test_design.csv")
 
-tax<-read.table("D://个人资料/博一/镇赉岩心样品/Analysis/taxonomy.txt",sep="\t", header=T, row.names=1)
+# input taxonomy annotation information
+tax<-read.table("D://Zhenlai_rewrite/meta/Result2/filtered_taxonomy_sandcore_water_oil.txt",sep="\t", header=T, row.names=1)
 
+# combine otu and taxonomy table
 otu_tax<-cbind(otu,tax)
 
-#链接：https://pan.baidu.com/s/1KpV3jhlcEf8DakZFKjsxmg 提取码：qxxd
-
-########### 对top 10 phylum基因进行统计
-
-phyla<-aggregate(otu_tax[,1:24],by=list(otu_tax$Genus),FUN=sum)
+# Count abundance by phylum name
+phyla<-aggregate(otu_tax[,1:171],by=list(otu_tax$Phylum),FUN=sum)
 
 rownames(phyla)<-phyla[,1]
 
@@ -22,8 +23,7 @@ mean<-phyla[,-1]
 
 a<-as.numeric(length(rownames(mean)))
 
-#筛选top 10丰度物种
-
+# Screen Top13 abundance phyla and assigned other phyla as "others"
 mean<-mean[order(rowSums(mean),decreasing=T),]
 
 top_phyla<-rbind(colSums(mean[14:a,]),mean[13:1,])
@@ -32,8 +32,8 @@ rownames(top_phyla)[1]<-"Others"
 
 bb<-cbind(t(top_phyla),design)
 
-#求处理直接丰度的平均值
 
+# Calculate the average abundance
 taxonomy<-aggregate(bb[,1:14],by=list(bb$Treatment),FUN=mean)
 
 rownames(taxonomy)<-taxonomy[,1]
@@ -51,15 +51,12 @@ dat <- melt(tax, id = 'Group.1')
 dat$Group.1 <-as.factor(dat$Group.1)
 
 
-
-color<-c("gray34","#4169B2","#B1A4C0","#479E9B","#BB2BA0","#DDA0DD",
+color<-c("gray34","#997D52","#4169B2","#B1A4C0","#479E9B","#BB2BA0","#DDA0DD",
          
-         "#BC8F8F","#DD5F60","#FFDAB9","#B4EEB4","#8FBC8F")
+         "#BC8F8F","#DD5F60","#F6906C","#FFDAB9","#A6CEE3","#B4EEB4","#8FBC8F")
 
-color<-c("#0055AA","#7FD2FF","#007ED3","#C40003","#00C19B","#EAC862","#B2DF8A","#FFACAA","#FF9D1E","#C3EF00","#CAB2D6","#894FC6","skyblue","red")
 
-library(ggalluvial)
-
+# Draw stack graph
 ggplot(data=dat,aes(x =dat$Group.1, y = value, fill =variable)) +
          
   geom_bar(position = "fill",stat = "identity",width = 0.6)+
@@ -76,7 +73,7 @@ ggplot(data=dat,aes(x =dat$Group.1, y = value, fill =variable)) +
   
   theme(legend.position = "right",legend.text = element_text(size = 7),
         
-        panel.grid =element_blank())+scale_x_discrete(name='Well Number' #x轴坐标名称
+        panel.grid =element_blank())+scale_x_discrete(name='Habitat' # x-axis name
                                                       
         )+
   
@@ -85,5 +82,4 @@ ggplot(data=dat,aes(x =dat$Group.1, y = value, fill =variable)) +
   theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+
   
   theme(axis.text=element_text(colour='black',size=9))
-
 
