@@ -1,5 +1,8 @@
+# Spearman correlations
+install.packages("corrplot") 
+library(corrplot)
 
-OTU <- read.table("D://Zhenlai_rewrite/Correlation_test/OTU_Phylum.txt", sep="\t", header=T, row.names=1)
+OTU <- read.table("D://Zhenlai/Correlation_test/OTU_Phylum.txt", sep="\t", header=T, row.names=1)
 
 OTU = t(OTU)
 
@@ -12,16 +15,10 @@ cor_spearman <- cor(OTU[1:143,1:16],OTU[1:143,17:18], method = 'spearman')
 cor_spearman
 
 
-install.packages("corrplot") 
-library(corrplot)
-
-
 col1=colorRampPalette(colors =c("darkgreen","white","darkred"),space="Lab")
 
 corrplot(cor_spearman, method = 'square', addCoef.col = 'black', col = col1(21), number.cex = 0.7, tl.cex = 0.8,
          tl.col="black", tl.srt = 45,tl.offset=0.7)
-
-
 
 
 cor_spearman <- cor(OTU, method = 'spearman')
@@ -42,5 +39,4 @@ corrplot(cor_spearman, add = TRUE, type = 'upper', method = 'circle', diag = TRU
          cl.pos = 'n',col = col1(10), p.mat = res1$p, insig = "label_sig",
          sig.level = c(.001, .01, .05), pch.cex = .8, pch.col = "black", order = "AOE")
 
- #输出，例如
 write.table(cor_pearson, 'cor_pearson.txt', sep = '\t', col.names = NA, quote = FALSE)
