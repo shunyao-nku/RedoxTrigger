@@ -83,65 +83,53 @@ igraph
 
 
 
-###network property
-##The size of the graph (number of edges)
+### network property
+# The size of the graph (number of edges)
 num.edges<-length(E(igraph))##length(curve_multiple(igraph))
 ##Order (number of vertices) of a graph
 num.vertices<-length(V(igraph))##length(diversity(igraph, weights = NULL, vids = V(igraph)))
-###connectance
-connectance<-edge_density(igraph,loops=FALSE)##同 graph.density;loops如果为TRUE,允许自身环（self loops即A--A或B--B）的存在
+# connectance
+connectance<-edge_density(igraph,loops=FALSE)
 ##average degree
-average.degree<-mean(igraph::degree(igraph))##或者为2M/N,其中M 和N 分别表示网络的边数和节点数。
-##average path length 平均路径长度
-average.path.length<-average.path.length(igraph)  #同mean_distance(igraph) ##mean_distance calculates the average path length in a graph
-##diameter
+average.degree<-mean(igraph::degree(igraph))
+##average path length
+average.path.length<-average.path.length(igraph)
+# diameter
 diameter<-diameter(igraph, directed = FALSE, unconnected = TRUE, weights = NULL)
 edge.connectivity<-edge_connectivity(igraph)
-####clustering coefficient
+# clustering coefficient
 clustering.coefficient<-transitivity(igraph)
 no.clusters<-no.clusters(igraph)
 centralization.betweenness<-centralization.betweenness(igraph)$centralization
 centralization.degree<-centralization.degree(igraph)$centralization
-###modularity
-fc<-cluster_fast_greedy(igraph,weights =NULL)#####cluster_walktrap cluster_edge_betweenness, cluster_fast_greedy, cluster_spinglass
+# modularity
+fc<-cluster_fast_greedy(igraph,weights =NULL)
 modularity<-modularity(igraph,membership(fc))
 
 
-####按照模块为节点配色
-comps <- membership(fc)
-colbar <- rainbow(max(comps))
-V(igraph)$color <- colbar[comps] 
 
-set.seed(123)
-plot(igraph,main="Co-occurrence network",vertex.frame.color=NA,vertex.label=NA,
-     edge.lty=1,edge.curved=TRUE,margin=c(0,0,0,0))
-
-
-
-
-
-#CK随机网络的构建
-#构建与100个点359个边的随机网络，点和边的量，手动改成自己构建的网络图中点和边的量，方便比较
+# Random network construction
+# Consturction random netwokrs with corresponding edges and nodes for comparisons
 g <- erdos.renyi.game(832, 6591, "gnm") 
 degree_distribution = degree_distribution(g)
 degree_distribution
+# output degree distribution for comparison
 write.table(degree_distribution, 'degree_sandcore.txt', sep = '\t', col.names = NA, quote = FALSE)
 
 
-#计算随机生成1000次指定网络节点数与网络边数随机网络的Average path length(APL)平均值和标准差
+# Average path length of random network by 1000 times
 apl<-mean(replicate(1000, average.path.length(erdos.renyi.game(281, 923, "gnm"))))
 apl
-
 apl.sd<-sd(replicate(1000, average.path.length(erdos.renyi.game(281, 923, "gnm"))))
 apl.sd
 
-#计算随机生成10000次指定网络节点数与网络边数随机网络的聚集系数(Clustering coefficient)平均值和标准差
+# Clustering coefficient of random network by 1000 times
 cc<-mean(replicate(1000, transitivity(erdos.renyi.game(281, 923, "gnm"))))
 cc
 cc.sd<-sd(replicate(1000, transitivity(erdos.renyi.game(281, 923, "gnm"))))
 cc.sd
 
-#计算随机生成1000次指定网络节点数与网络边数随机网络的modularity(M)平均值和标准差
+# Modularity of random network by 1000 times
 
 f <- function() {
   g <- erdos.renyi.game(132, 163, "gnm")
@@ -153,20 +141,18 @@ mo
 mo.sd<-sd(replicate(1000, f()))
 mo.sd
 
-#计算随机生成1000次指定网络节点数与网络边数随机网络的直径平均值和标准差
+# Diameter of random network by 1000 times
 gd<-mean(replicate(1000, diameter(erdos.renyi.game(281, 923, "gnm"))))
 gd
 gd.sd<-sd(replicate(1000, diameter(erdos.renyi.game(281, 923, "gnm"))))
 gd.sd
 
-#计算随机生成1000次指定网络节点数与网络边数随机网络的平均度average degree平均值和标准差
+# Average degree Modularity of random network by 1000 times
 ad<-mean(replicate(1000, igraph::degree(erdos.renyi.game(281, 923, "gnm"))))
 ad
 ad.sd<-sd(replicate(1000, igraph::degree(erdos.renyi.game(281, 923, "gnm"))))
 ad.sd
 
-#计算随机生成1000次指定网络节点数与网络边数随机网络的平均度graph density平均值和标准差
+# Density of random network by 1000 times
 gd<-mean(replicate(1000, graph.density(erdos.renyi.game(281, 923, "gnm", loops=FALSE))))
 gd
-
-
