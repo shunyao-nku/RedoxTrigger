@@ -1,5 +1,5 @@
 # Spearman correlations
-install.packages("corrplot") 
+# install.packages("corrplot") 
 library(corrplot)
 
 OTU <- read.table("D://Zhenlai/Correlation_test/OTU_Phylum.txt", sep="\t", header=T, row.names=1)
