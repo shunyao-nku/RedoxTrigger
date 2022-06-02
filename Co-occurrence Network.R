@@ -1,12 +1,40 @@
-setwd("~/Downloads/otu_table")
+# Co-occurrence network, topological properties and their corresponding random networks
 
 library(igraph)
 library(psych)
+library(reshape2)
 
-##读取otu-sample矩阵，行为sample，列为otu
-otu<-read.table("otu_table.txt",head=T,row.names=1)
+# read environmental factor table, feature table, taxonomy annotation table 
+Ev <- read.table("D://Zhenlai/Network2/Ev.txt", sep="\t", header=T, row.names=1)
+OTU <- read.table("D://Zhenlai/Subnetwork/PW8910/ASV_PW8910.txt", sep="\t", header=T, row.names=1)
+tax <- read.table("D://Zhenlai/Subnetwork/PW567/filtered_taxonomy_sandcore_water_oil.txt", sep="\t", header=T)
+names(tax)[1] <- "Id"
 
-otu<-read.table("otu_table.txt",head=T,row.names=1)
+# If ASV features are too many, it is feasible to conduct an abundance filtration before calculating correlations
+abundance=0.01
+OTU <- OTU[,colSums(OTU)/sum(OTU)>=(abundance/100)]
+
+# set confidential level
+r.cutoff=0.7
+p.cutoff=0.01
+
+# Ev-OTU spearman's correlation calculation 
+Ev=t(Ev)
+OTU=t(OTU)
+occor=corr.test(OTU, Ev,
+                use="pairwise",
+                method="spearman", # 可选pearson/kendall
+                adjust="fdr",
+                alpha=0.05)
+
+# OTU-OTU spearman's correlation calculation 
+OTU=t(OTU)
+occor=corr.test(OTU,
+     use="pairwise",
+     method="spearman",
+     adjust="fdr",
+     alpha=0.05)
+
 ####数据量小时可以用psych包corr.test求相关性矩阵，数据量大时，可应用WGCNA中corAndPvalue,但p值需要借助其他函数矫正
 occor<-corr.test(otu,use="pairwise",method="spearman",adjust="fdr",alpha=.05)
 occor.r<-occor$r ###取相关性矩阵R值
